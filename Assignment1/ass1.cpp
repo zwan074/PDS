@@ -12,14 +12,14 @@
 
 typedef unsigned long ULONG;
 
-ULONG modlin(ULONG a, ULONG x, ULONG c, ULONG m)
+ULONG modlin(ULONG x)
 {
     return (a * x + c) % m;
 }
 // Put integer n in range x1 , x2 with the maximum integer value
-double rescale(ULONG N, ULONG n, double x1, double x2)
+double rescale(ULONG n, double x1, double x2)
 {
-    double f = static_cast<double>(n) / static_cast<double>(N);
+    double f = static_cast<double>(n) / static_cast<double>(sidelen);
     return x1 + f * (x2 - x1);
 }
 
@@ -82,9 +82,9 @@ int main(int argc,char* argv[])
             ULONG ix = n_next % sidelen;
             ULONG iy = n_next / sidelen;
             // Scale current random integer to value from 0−1
-            double x = rescale(sidelen, ix, -1, 1);
-            double y = rescale(sidelen, iy, -1, 1);
-            if ( is_in_circle (double x,double y) ) 
+            double x = rescale( ix, -1, 1);
+            double y = rescale( iy, -1, 1);
+            if ( is_in_circle ( x, y) ) 
                 number_in_circle0++;
 
         }
@@ -126,9 +126,9 @@ int main(int argc,char* argv[])
             ULONG ix = n_next % sidelen;
             ULONG iy = n_next / sidelen;
             // Scale current random integer to value from 0−1
-            double x = rescale(sidelen, ix, -1, 1);
-            double y = rescale(sidelen, iy, -1, 1);
-            if ( is_in_circle (double x,double y) ) 
+            double x = rescale( ix, -1, 1);
+            double y = rescale( iy, -1, 1);
+            if ( is_in_circle ( x, y) ) 
                 number_in_circle1++;
 
         }
