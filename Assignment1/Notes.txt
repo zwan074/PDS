@@ -1,0 +1,19 @@
+Recommended data word type
+
+It is a good idea to make sure that you use UNSIGNED 64 bit integers for all integer quantities. In C/C++ these can be declared for example:
+
+const unsigned long m = 4294967296;
+
+In C/C++ one has the typdef specifier that can be used to create an alias for another data type. For example, put this statement near the top of your program just after the #include statements:
+
+typedef unsigned long ULONG;
+
+Then throughout your program, use ULONG to declare your integers. This is more convenient than having to type unsigned long all the time. It also easily allows you to switch to another type if so desired.
+
+The MPI word specifier for unsigned long is MPI_UNSIGNED_LONG or MPI::UNSIGNED_LONG for C++ programmers.
+
+Generating optimal code
+
+When compiling your program, use the -O3 switch to generate optimal machine code, eg:
+
+mpic++ -O3 -o myprog myprog.cpp
