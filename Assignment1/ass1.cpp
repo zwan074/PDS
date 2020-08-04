@@ -12,10 +12,6 @@
 
 typedef unsigned long ULONG;
 
-ULONG modlin(ULONG x)
-{
-    return (a * x + c) % m;
-}
 // Put integer n in range x1 , x2 with the maximum integer value
 double rescale(ULONG n, double x1, double x2)
 {
@@ -32,7 +28,7 @@ bool is_in_circle (double x,double y) {
 ULONG compute_A (int k) {
     ULONG A = 1;
     for(int i = 0; i < k; i++){
-        A = (A * i) % m ;
+        A = (A * a) % m ;
     }
     return A;
 }
@@ -48,6 +44,16 @@ int main(int argc,char* argv[])
     std::cout << "This is id " << myid << " out of " << numproc << std::endl;
     ULONG number_of_random_numbers = N/numproc;
 
+    int k = numproc;
+    ULONG A = compute_A (k);
+    ULONG temp = 0 ;
+    
+    for (int i = k - 1  ; i > 0 ; i--){
+        temp = temp + compute_A (i);
+    }
+
+    ULONG C = (c * temp) % m ;
+
     if (myid == 0) {
 
         
@@ -62,18 +68,8 @@ int main(int argc,char* argv[])
             //vbuffer.push_back(i);
             MPI::COMM_WORLD.Send(&n_next, 1, MPI::UNSIGNED_LONG, i,0);
         }
-
-        int k = numproc;
-        ULONG A = compute_A (k);
-        ULONG temp = 0 ;
         
-        for (int i = k - 1  ; i > 0 ; i--){
-            temp = temp + compute_A (i);
-        }
-
-        ULONG C = (c * temp) % m ;
         n_prev = n0;
-
         for(int i = 0 ; i < number_of_random_numbers; i++){
            
             ULONG n_next = A * n_prev + C;
@@ -107,17 +103,9 @@ int main(int argc,char* argv[])
         ULONG n_next;
         MPI::COMM_WORLD.Recv(&n_next, 1, MPI::UNSIGNED_LONG, 0, 0);
         ULONG n_prev = n_next;
-
-        int k = numproc;
-        ULONG number_in_circle1 = 0;
-        ULONG A = compute_A (k);
-        ULONG temp = 0 ;
         
-        for (int i = k - 1  ; i > 0 ; i--){
-            temp = temp + compute_A (i);
-        }
+        ULONG number_in_circle1 = 0;
 
-        ULONG C = (c * temp) % m ;
 
         for(int i = 0 ; i < number_of_random_numbers; i++){
             ULONG n_next = A * n_prev + C;
