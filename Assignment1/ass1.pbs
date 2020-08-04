@@ -1,0 +1,4 @@
+
+#PBS -j oe -o ass1.stdout -l nodes=1:ppn=4 -q pp
+
+mpiexec -machinefile $PBS_NODEFILE /home/s17272381/assignment1/ass1 
