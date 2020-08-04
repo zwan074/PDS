@@ -23,7 +23,7 @@ double rescale(ULONG n, double x1, double x2)
     return x1 + f * (x2 - x1);
 }
 
-boolean is_in_circle (double x,double y) {
+bool is_in_circle (double x,double y) {
     
     return true ? x * x + y * y <= 0.25 : false;
 
@@ -60,7 +60,7 @@ int main(int argc,char* argv[])
             n_prev = n_next;
             //vbuffer.push_back(n_next);
             //vbuffer.push_back(i);
-            MPI::COMM_WORLD.Send(&n_next, 1, MPI::ULONG, i,0);
+            MPI::COMM_WORLD.Send(&n_next, 1, MPI::unsigned long, i,0);
         }
 
         int k = numproc;
@@ -89,9 +89,9 @@ int main(int argc,char* argv[])
 
         }
 
-        for (i=1;i<numproc;i++) {//receive from all nodes
-
-            MPI::COMM_WORLD.Recv(&number_in_circle1, 1, MPI::ULONG, i, 0);
+        for (int i=1;i<numproc;i++) {//receive from all nodes
+            ULONG number_in_circle1 = 0;
+            MPI::COMM_WORLD.Recv(&number_in_circle1, 1, MPI::unsigned long, i, 0);
             number_in_circle0 += number_in_circle1;
 
         }
@@ -135,7 +135,7 @@ int main(int argc,char* argv[])
 
 
         // Slave sends 'sum1' to master
-        MPI::COMM_WORLD.Send(&number_in_circle1, 1, MPI::ULONG, 0,0);
+        MPI::COMM_WORLD.Send(&number_in_circle1, 1, MPI::unsigned long, 0,0);
     }
     MPI::Finalize();
 }
