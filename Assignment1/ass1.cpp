@@ -96,7 +96,7 @@ int main(int argc,char* argv[])
 
         for (int i=1;i<numproc;i++) {//receive from all nodes
             ULONG number_in_circle1 = 0;
-            MPI_Recv(&sum1, 1, MPI_UNSIGNED_LONG, i,0, MPI_COMM_WORLD, &Stat);   
+            MPI_Recv(&number_in_circle1, 1, MPI_UNSIGNED_LONG, i,0, MPI_COMM_WORLD, &Stat);   
             //MPI::COMM_WORLD.Recv(&number_in_circle1, 1, MPI::UNSIGNED_LONG, i, 0);
             number_in_circle0 += number_in_circle1;
                
