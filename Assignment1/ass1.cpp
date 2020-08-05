@@ -7,7 +7,7 @@
 #define m 4294967296
 #define c 1013904223
 #define n0 12345
-#define N 10000000
+#define N 10000//10000000
 #define sidelen 65536
 
 typedef unsigned long ULONG;
