@@ -63,8 +63,6 @@ int main(int argc,char* argv[])
     ULONG C = (c * temp) % m ;
     */
     if (myid == 0) {
-
-        
         n_prev = n0;
         number_in_circle0 = 0;
 
@@ -81,7 +79,7 @@ int main(int argc,char* argv[])
         n_prev = n0;
         for(int i = 0 ; i < number_of_random_numbers; i++){
            
-            n_next = a * n_prev + c;
+            n_next = (a * n_prev + c) % m;
             n_prev = n_next;
             // Scale the random number to a random 2−d position
             ix = n_next % sidelen;
@@ -108,8 +106,6 @@ int main(int argc,char* argv[])
 
     else if (myid == 1) {
         //std::vector<ULONG> vbuffer;
-
-        n_next;
         //MPI::COMM_WORLD.Recv(&n_next, 1, MPI::UNSIGNED_LONG, 0, 0);
         MPI_Recv(&n_next, 1, MPI_LONG, 0, 0, MPI_COMM_WORLD, &Stat);
         n_prev = n_next;
@@ -117,7 +113,7 @@ int main(int argc,char* argv[])
 
 
         for(int i = 0 ; i < number_of_random_numbers; i++){
-            n_next = a * n_prev + c;
+            n_next = (a * n_prev + c) % m;
             n_prev = n_next;
             // Scale the random number to a random 2−d position
             ULONG ix = n_next % sidelen;
