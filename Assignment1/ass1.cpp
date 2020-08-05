@@ -7,7 +7,7 @@
 #define m 4294967296
 #define c 1013904223
 #define n0 12345
-#define N 1000//10000000
+#define N 100//10000000
 #define sidelen 65536
 
 typedef unsigned long ULONG;
@@ -78,7 +78,7 @@ int main(int argc,char* argv[])
         fprintf(stdout,"check pt 2 \n");
         n_prev = n0;
         for(int i = 0 ; i < number_of_random_numbers; i++){
-            fprintf(stdout, "master i = %d\n", i); 
+            //fprintf(stdout, "master i = %d\n", i); 
             n_next = (a * n_prev + c) % m;
             n_prev = n_next;
             // Scale the random number to a random 2−d position
@@ -91,6 +91,7 @@ int main(int argc,char* argv[])
                 number_in_circle0++;
 
         }
+        fprintf(stdout,"number_in_circle0 = %d \n", number_in_circle0);
         fprintf(stdout,"check pt 3 \n");
         for (int i=1;i<numproc;i++) {//receive from all nodes
             MPI_Recv(&number_in_circle1, 1, MPI_UNSIGNED_LONG, i,0, MPI_COMM_WORLD, &Stat);   
@@ -98,9 +99,8 @@ int main(int argc,char* argv[])
             //MPI::COMM_WORLD.Recv(&number_in_circle1, 1, MPI::UNSIGNED_LONG, i, 0);
             number_in_circle0 += number_in_circle1;
         }
-
+        fprintf(stdout,"final points = %d \n", number_in_circle0); 
         double result = number_in_circle0 / N ;
-        std::cout << "result " << result << std::endl;
         fprintf(stdout,"The final result is %d \n",result);
 
     } 
@@ -116,7 +116,7 @@ int main(int argc,char* argv[])
 
         fprintf(stdout,"slave check pt 2 \n");
         for(int i = 0 ; i < number_of_random_numbers; i++){
-            fprintf(stdout, "slave i = %d\n", i); 
+            //fprintf(stdout, "slave i = %d\n", i); 
             n_next = (a * n_prev + c) % m;
             n_prev = n_next;
             // Scale the random number to a random 2−d position
