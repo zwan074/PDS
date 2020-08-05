@@ -109,7 +109,7 @@ int main(int argc,char* argv[])
         //std::vector<ULONG> vbuffer;
         //MPI::COMM_WORLD.Recv(&n_next, 1, MPI::UNSIGNED_LONG, 0, 0);
         fprintf(stdout,"slave check pt 1 \n");
-        MPI_Recv(&n_next, 1, MPI_LONG, 0, 0, MPI_COMM_WORLD, &Stat);
+        MPI_Recv(&n_next, 1, MPI_UNSIGNED_LONG, 0, 0, MPI_COMM_WORLD, &Stat);
         fprintf(stdout,"n_next = %d \n", n_next);
         n_prev = n_next;
         number_in_circle1 = 0;
@@ -120,8 +120,8 @@ int main(int argc,char* argv[])
             n_next = (a * n_prev + c) % m;
             n_prev = n_next;
             // Scale the random number to a random 2−d position
-            ULONG ix = n_next % sidelen;
-            ULONG iy = n_next / sidelen;
+            ix = n_next % sidelen;
+            iy = n_next / sidelen;
             // Scale current random integer to value from 0−1
             double x = rescale( ix, -1, 1);
             double y = rescale( iy, -1, 1);
