@@ -51,6 +51,7 @@ int main(int argc,char* argv[])
 
     ULONG number_of_random_numbers = N/numproc;
     fprintf(stdout, "number_of_random_numbers = %d\n", number_of_random_numbers);  
+    std::cout << "test hello" << std::endl;
     /*
     int k = numproc;
     ULONG A = compute_A (k);
@@ -65,7 +66,7 @@ int main(int argc,char* argv[])
     if (myid == 0) {
         n_prev = n0;
         number_in_circle0 = 0;
-
+        fprintf(stdout,"check pt 1 \n");
         for(int i = 1; i < numproc; i++){
             //std::vector<ULONG> vbuffer;
             n_next = (a * n_prev + c) % m;
@@ -75,7 +76,7 @@ int main(int argc,char* argv[])
             //MPI::COMM_WORLD.Send(&n_next, 1, MPI::UNSIGNED_LONG, i,0);
             MPI_Send(&n_next, 1, MPI_UNSIGNED_LONG, i,0, MPI_COMM_WORLD);
         }
-        
+        fprintf(stdout,"check pt 2 \n");
         n_prev = n0;
         for(int i = 0 ; i < number_of_random_numbers; i++){
            
@@ -91,7 +92,7 @@ int main(int argc,char* argv[])
                 number_in_circle0++;
 
         }
-
+        fprintf(stdout,"check pt 3 \n");
         for (int i=1;i<numproc;i++) {//receive from all nodes
             MPI_Recv(&number_in_circle1, 1, MPI_UNSIGNED_LONG, i,0, MPI_COMM_WORLD, &Stat);   
             //MPI::COMM_WORLD.Recv(&number_in_circle1, 1, MPI::UNSIGNED_LONG, i, 0);
@@ -107,11 +108,12 @@ int main(int argc,char* argv[])
     else if (myid == 1) {
         //std::vector<ULONG> vbuffer;
         //MPI::COMM_WORLD.Recv(&n_next, 1, MPI::UNSIGNED_LONG, 0, 0);
+        fprintf(stdout,"slave check pt 1 \n");
         MPI_Recv(&n_next, 1, MPI_LONG, 0, 0, MPI_COMM_WORLD, &Stat);
         n_prev = n_next;
         number_in_circle1 = 0;
 
-
+        fprintf(stdout,"slave check pt 2 \n");
         for(int i = 0 ; i < number_of_random_numbers; i++){
             n_next = (a * n_prev + c) % m;
             n_prev = n_next;
@@ -126,7 +128,7 @@ int main(int argc,char* argv[])
 
         }
 
-
+        fprintf(stdout,"slave check pt 3 \n");
         // Slave sends 'sum1' to master
         //MPI::COMM_WORLD.Send(&number_in_circle1, 1, MPI::UNSIGNED_LONG, 0,0);
         MPI_Send(&number_in_circle1, 1, MPI_UNSIGNED_LONG, 0, 0, MPI_COMM_WORLD);
