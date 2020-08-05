@@ -36,13 +36,21 @@ ULONG compute_A (int k) {
 //always use argc and argv, as mpirun will pass the appropriate parms.
 int main(int argc,char* argv[])
 {
-    MPI::Init(argc,argv);
+    int numproc, myid, namelen;
+    char processor_name[MPI_MAX_PROCESSOR_NAME];
 
-    // What is my ID and how many processes are in this pool?
-    int myid = MPI::COMM_WORLD.Get_rank();
-    int numproc = MPI::COMM_WORLD.Get_size();
-    std::cout << "This is id " << myid << " out of " << numproc << std::endl;
+    MPI_Status Stat;//status variable, so operations can be checked
+
+    MPI_Init(&argc,&argv);//INITIALIZE
+    MPI_Comm_size(MPI_COMM_WORLD, &numproc); //how many processors??
+    MPI_Comm_rank(MPI_COMM_WORLD, &myid);    //what is THIS processor-ID?
+
+    //what is THIS processor name (hostname)?
+    MPI_Get_processor_name(processor_name,&namelen);
+    fprintf(stdout, "Processor ID = %d: %s %d\n", myid, processor_name, numproc);
+
     ULONG number_of_random_numbers = N/numproc;
+    fprintf(stdout, "number_of_random_numbers = %d\n", number_of_random_numbers);  
 
     int k = numproc;
     ULONG A = compute_A (k);
@@ -66,7 +74,8 @@ int main(int argc,char* argv[])
             n_prev = n_next;
             //vbuffer.push_back(n_next);
             //vbuffer.push_back(i);
-            MPI::COMM_WORLD.Send(&n_next, 1, MPI::UNSIGNED_LONG, i,0);
+            //MPI::COMM_WORLD.Send(&n_next, 1, MPI::UNSIGNED_LONG, i,0);
+            MPI_Send(&n_next, 1, MPI_UNSIGNED_LONG, i,0, MPI_COMM_WORLD);
         }
         
         n_prev = n0;
@@ -87,13 +96,14 @@ int main(int argc,char* argv[])
 
         for (int i=1;i<numproc;i++) {//receive from all nodes
             ULONG number_in_circle1 = 0;
-            MPI::COMM_WORLD.Recv(&number_in_circle1, 1, MPI::UNSIGNED_LONG, i, 0);
+            MPI_Recv(&sum1, 1, MPI_UNSIGNED_LONG, i,0, MPI_COMM_WORLD, &Stat);   
+            //MPI::COMM_WORLD.Recv(&number_in_circle1, 1, MPI::UNSIGNED_LONG, i, 0);
             number_in_circle0 += number_in_circle1;
-
+               
         }
         double result = number_in_circle0 / N ;
         std::cout << "result " << result << std::endl;
-
+        fprintf(stdout,"The final result is %d \n",result);
 
     } 
 
@@ -101,9 +111,9 @@ int main(int argc,char* argv[])
         //std::vector<ULONG> vbuffer;
 
         ULONG n_next;
-        MPI::COMM_WORLD.Recv(&n_next, 1, MPI::UNSIGNED_LONG, 0, 0);
+        //MPI::COMM_WORLD.Recv(&n_next, 1, MPI::UNSIGNED_LONG, 0, 0);
+        MPI_Recv(&n_next, 1, MPI_LONG, 0, 0, MPI_COMM_WORLD, &Stat);
         ULONG n_prev = n_next;
-        
         ULONG number_in_circle1 = 0;
 
 
@@ -123,7 +133,8 @@ int main(int argc,char* argv[])
 
 
         // Slave sends 'sum1' to master
-        MPI::COMM_WORLD.Send(&number_in_circle1, 1, MPI::UNSIGNED_LONG, 0,0);
+        //MPI::COMM_WORLD.Send(&number_in_circle1, 1, MPI::UNSIGNED_LONG, 0,0);
+        MPI_Send(&number_in_circle1, 1, MPI_UNSIGNED_LONG, 0, 0, MPI_COMM_WORLD);
     }
     MPI::Finalize();
 }
