@@ -38,7 +38,7 @@ int main(int argc,char* argv[])
 {
     int numproc, myid, namelen;
     char processor_name[MPI_MAX_PROCESSOR_NAME];
-
+    ULONG n_next,n_prev,number_in_circle0,number_in_circle1,ix,iy;
     MPI_Status Stat;//status variable, so operations can be checked
 
     MPI_Init(&argc,&argv);//INITIALIZE
@@ -51,7 +51,7 @@ int main(int argc,char* argv[])
 
     ULONG number_of_random_numbers = N/numproc;
     fprintf(stdout, "number_of_random_numbers = %d\n", number_of_random_numbers);  
-
+    /*
     int k = numproc;
     ULONG A = compute_A (k);
     ULONG temp = 0 ;
@@ -61,16 +61,16 @@ int main(int argc,char* argv[])
     }
 
     ULONG C = (c * temp) % m ;
-
+    */
     if (myid == 0) {
 
         
-        ULONG n_prev = n0;
-        ULONG number_in_circle0 = 0;
+        n_prev = n0;
+        number_in_circle0 = 0;
 
         for(int i = 1; i < numproc; i++){
             //std::vector<ULONG> vbuffer;
-            ULONG n_next = (a * n_prev + c) % m;
+            n_next = (a * n_prev + c) % m;
             n_prev = n_next;
             //vbuffer.push_back(n_next);
             //vbuffer.push_back(i);
@@ -81,11 +81,11 @@ int main(int argc,char* argv[])
         n_prev = n0;
         for(int i = 0 ; i < number_of_random_numbers; i++){
            
-            ULONG n_next = A * n_prev + C;
+            n_next = a * n_prev + c;
             n_prev = n_next;
             // Scale the random number to a random 2−d position
-            ULONG ix = n_next % sidelen;
-            ULONG iy = n_next / sidelen;
+            ix = n_next % sidelen;
+            iy = n_next / sidelen;
             // Scale current random integer to value from 0−1
             double x = rescale( ix, -1, 1);
             double y = rescale( iy, -1, 1);
@@ -95,7 +95,6 @@ int main(int argc,char* argv[])
         }
 
         for (int i=1;i<numproc;i++) {//receive from all nodes
-            ULONG number_in_circle1 = 0;
             MPI_Recv(&number_in_circle1, 1, MPI_UNSIGNED_LONG, i,0, MPI_COMM_WORLD, &Stat);   
             //MPI::COMM_WORLD.Recv(&number_in_circle1, 1, MPI::UNSIGNED_LONG, i, 0);
             number_in_circle0 += number_in_circle1;
@@ -110,15 +109,15 @@ int main(int argc,char* argv[])
     else if (myid == 1) {
         //std::vector<ULONG> vbuffer;
 
-        ULONG n_next;
+        n_next;
         //MPI::COMM_WORLD.Recv(&n_next, 1, MPI::UNSIGNED_LONG, 0, 0);
         MPI_Recv(&n_next, 1, MPI_LONG, 0, 0, MPI_COMM_WORLD, &Stat);
-        ULONG n_prev = n_next;
-        ULONG number_in_circle1 = 0;
+        n_prev = n_next;
+        number_in_circle1 = 0;
 
 
         for(int i = 0 ; i < number_of_random_numbers; i++){
-            ULONG n_next = A * n_prev + C;
+            n_next = a * n_prev + c;
             n_prev = n_next;
             // Scale the random number to a random 2−d position
             ULONG ix = n_next % sidelen;
