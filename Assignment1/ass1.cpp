@@ -39,6 +39,7 @@ int main(int argc,char* argv[])
     int numproc, myid, namelen;
     char processor_name[MPI_MAX_PROCESSOR_NAME];
     ULONG n_next,n_prev,number_in_circle0,number_in_circle1,ix,iy;
+    double T0,T1;
     MPI_Status Stat;//status variable, so operations can be checked
 
     MPI_Init(&argc,&argv);//INITIALIZE
@@ -66,6 +67,7 @@ int main(int argc,char* argv[])
         n_prev = n0;
         number_in_circle0 = 0;
         fprintf(stdout,"check pt 1 \n");
+        T0 = MPI_Wtime();
         for(int i = 1; i < numproc; i++){
             //std::vector<ULONG> vbuffer;
             n_next = (a * n_prev + c) % m;
@@ -93,6 +95,8 @@ int main(int argc,char* argv[])
         }
         fprintf(stdout,"number_in_circle0 = %d \n", number_in_circle0);
         fprintf(stdout,"check pt 3 \n");
+        T0 = T0 - MPI_Wtime();
+        fprintf(stdout,"Master total time:  %f s\n", T0);
         for (int i=1;i<numproc;i++) {//receive from all nodes
             MPI_Recv(&number_in_circle1, 1, MPI_UNSIGNED_LONG, i,0, MPI_COMM_WORLD, &Stat);   
             fprintf(stdout,"number_in_circle1 = %d \n", number_in_circle1);
@@ -109,6 +113,7 @@ int main(int argc,char* argv[])
         //std::vector<ULONG> vbuffer;
         //MPI::COMM_WORLD.Recv(&n_next, 1, MPI::UNSIGNED_LONG, 0, 0);
         fprintf(stdout,"slave check pt 1 \n");
+        T1 = MPI_Wtime();
         MPI_Recv(&n_next, 1, MPI_UNSIGNED_LONG, 0, 0, MPI_COMM_WORLD, &Stat);
         fprintf(stdout,"n_next = %d \n", n_next);
         n_prev = n_next;
@@ -129,8 +134,9 @@ int main(int argc,char* argv[])
                 number_in_circle1++;
 
         }
-
+        T1 = T1 - MPI_Wtime();
         fprintf(stdout,"slave check pt 3 \n");
+        fprintf(stdout,"Slave total time:  %f s\n", T1);
         fprintf(stdout,"number_in_circle1 = %d \n", number_in_circle1);
         // Slave sends 'sum1' to master
         //MPI::COMM_WORLD.Send(&number_in_circle1, 1, MPI::UNSIGNED_LONG, 0,0);
