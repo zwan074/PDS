@@ -75,6 +75,7 @@ int main(int argc,char* argv[])
             //vbuffer.push_back(n_next);
             //vbuffer.push_back(i);
             //MPI::COMM_WORLD.Send(&n_next, 1, MPI::UNSIGNED_LONG, i,0);
+            fprintf(stdout, "send %ld to slave %d\n",n_next,i);
             MPI_Send(&n_next, 1, MPI_UNSIGNED_LONG, i,0, MPI_COMM_WORLD);
         }
         fprintf(stdout,"check pt 2 \n");
@@ -100,7 +101,6 @@ int main(int argc,char* argv[])
         for (int i=1;i<numproc;i++) {//receive from all nodes
             MPI_Recv(&number_in_circle1, 1, MPI_UNSIGNED_LONG, i,0, MPI_COMM_WORLD, &Stat);   
             fprintf(stdout,"number_in_circle1 = %d \n", number_in_circle1);
-            //MPI::COMM_WORLD.Recv(&number_in_circle1, 1, MPI::UNSIGNED_LONG, i, 0);
             number_in_circle0 += number_in_circle1;
         }
         fprintf(stdout,"final points = %d \n", number_in_circle0); 
