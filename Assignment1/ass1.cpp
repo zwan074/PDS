@@ -143,7 +143,7 @@ int main(int argc,char* argv[])
         //fprintf(stdout,"number_in_circle0 = %d \n", number_in_circle0);
         //fprintf(stdout,"check pt 3 \n");
         T0 = MPI_Wtime() - T0 ;
-        fprintf(stdout,"Master total time:  %f s\n", T0);
+        fprintf(stdout,"Master %d total time:  %f s\n",myid, T0);
         for (int i=1;i<numproc;i++) {//receive from all nodes
             MPI_Recv(&number_in_circle1, 1, MPI_UNSIGNED_LONG, i,0, MPI_COMM_WORLD, &Stat);   
             fprintf(stdout,"number_in_circle1 = %d \n", number_in_circle1);
@@ -179,7 +179,7 @@ int main(int argc,char* argv[])
         }
         T1 = MPI_Wtime() - T1 ;
         //fprintf(stdout,"slave check pt 3 \n");
-        //fprintf(stdout,"Slave total time:  %f s\n", T1);
+        fprintf(stdout,"Slave %d total time:  %f s\n",myid, T1);
         //fprintf(stdout,"number_in_circle1 = %d \n", number_in_circle1);
 
         MPI_Send(&number_in_circle1, 1, MPI_UNSIGNED_LONG, 0, 0, MPI_COMM_WORLD);
