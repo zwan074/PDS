@@ -96,7 +96,7 @@ int main(int argc,char* argv[])
         }
         fprintf(stdout,"number_in_circle0 = %d \n", number_in_circle0);
         fprintf(stdout,"check pt 3 \n");
-        T0 = T0 - MPI_Wtime();
+        T0 = MPI_Wtime() - T0 ;
         fprintf(stdout,"Master total time:  %f s\n", T0);
         for (int i=1;i<numproc;i++) {//receive from all nodes
             MPI_Recv(&number_in_circle1, 1, MPI_UNSIGNED_LONG, i,0, MPI_COMM_WORLD, &Stat);   
@@ -113,20 +113,19 @@ int main(int argc,char* argv[])
         //std::vector<ULONG> vbuffer;
         fprintf(stdout,"slave check pt 1 \n");
         T1 = MPI_Wtime();
-        ULONG n1_next;
-        MPI_Recv(&n1_next, 1, MPI_UNSIGNED_LONG, 0, 0, MPI_COMM_WORLD, &Stat);
-        fprintf(stdout,"n_next = %d \n", n_next);
-        n_prev = n1_next;
+        MPI_Recv(&n_next, 1, MPI_UNSIGNED_LONG, 0, 0, MPI_COMM_WORLD, &Stat);
+        fprintf(stdout,"n_next = %ld \n", n_next);
+        n_prev = n_next;
         number_in_circle1 = 0;
 
         fprintf(stdout,"slave check pt 2 \n");
         for(int i = 0 ; i < number_of_random_numbers; i++){
             //fprintf(stdout, "slave i = %d\n", i); 
-            n1_next = (a * n_prev + c) % m;
-            n_prev = n1_next;
+            n_next = (a * n_prev + c) % m;
+            n_prev = n_next;
             // Scale the random number to a random 2−d position
-            ix = n1_next % sidelen;
-            iy = n1_next / sidelen;
+            ix = n_next % sidelen;
+            iy = n_next / sidelen;
             // Scale current random integer to value from 0−1
             double x = rescale( ix, -1, 1);
             double y = rescale( iy, -1, 1);
@@ -134,7 +133,7 @@ int main(int argc,char* argv[])
                 number_in_circle1++;
 
         }
-        T1 = T1 - MPI_Wtime();
+        T1 = MPI_Wtime() - T1 ;
         fprintf(stdout,"slave check pt 3 \n");
         fprintf(stdout,"Slave total time:  %f s\n", T1);
         fprintf(stdout,"number_in_circle1 = %d \n", number_in_circle1);
