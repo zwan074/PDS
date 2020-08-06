@@ -111,22 +111,22 @@ int main(int argc,char* argv[])
 
     else if (myid == 1) {
         //std::vector<ULONG> vbuffer;
-        //MPI::COMM_WORLD.Recv(&n_next, 1, MPI::UNSIGNED_LONG, 0, 0);
         fprintf(stdout,"slave check pt 1 \n");
         T1 = MPI_Wtime();
-        MPI_Recv(&n_next, 1, MPI_UNSIGNED_LONG, 0, 0, MPI_COMM_WORLD, &Stat);
+        ULONG n1_next;
+        MPI_Recv(&n1_next, 1, MPI_UNSIGNED_LONG, 0, 0, MPI_COMM_WORLD, &Stat);
         fprintf(stdout,"n_next = %d \n", n_next);
-        n_prev = n_next;
+        n_prev = n1_next;
         number_in_circle1 = 0;
 
         fprintf(stdout,"slave check pt 2 \n");
         for(int i = 0 ; i < number_of_random_numbers; i++){
             //fprintf(stdout, "slave i = %d\n", i); 
-            n_next = (a * n_prev + c) % m;
-            n_prev = n_next;
+            n1_next = (a * n_prev + c) % m;
+            n_prev = n1_next;
             // Scale the random number to a random 2−d position
-            ix = n_next % sidelen;
-            iy = n_next / sidelen;
+            ix = n1_next % sidelen;
+            iy = n1_next / sidelen;
             // Scale current random integer to value from 0−1
             double x = rescale( ix, -1, 1);
             double y = rescale( iy, -1, 1);
