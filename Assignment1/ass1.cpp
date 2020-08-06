@@ -7,7 +7,7 @@
 #define m 4294967296
 #define c 1013904223
 #define n0 12345
-#define N 10000000
+#define N 100000000
 #define sidelen 65536
 
 typedef unsigned long ULONG;
@@ -150,8 +150,8 @@ int main(int argc,char* argv[])
             fprintf(stdout,"number_in_circle1 = %d \n", number_in_circle1);
             number_in_circle0 += number_in_circle1;
         }
-        fprintf(stdout,"final points = %d \n", number_in_circle0); 
-        fprintf(stdout,"The final result is %f \n", (4.0 * number_in_circle0) / N );
+        fprintf(stdout,"Total points in points = %d \n", number_in_circle0); 
+        fprintf(stdout,"The final result for PI is %f \n", (4.0 * number_in_circle0) / N );
 
     } 
 
