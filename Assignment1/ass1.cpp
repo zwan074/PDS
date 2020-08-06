@@ -104,8 +104,7 @@ int main(int argc,char* argv[])
             number_in_circle0 += number_in_circle1;
         }
         fprintf(stdout,"final points = %d \n", number_in_circle0); 
-        double result = (4 * number_in_circle0) / N ;
-        fprintf(stdout,"The final result is %f \n",result);
+        fprintf(stdout,"The final result is %f \n",(4 * number_in_circle0) / N);
 
     } 
 
