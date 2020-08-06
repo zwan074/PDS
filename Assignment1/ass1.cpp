@@ -7,7 +7,7 @@
 #define m 4294967296
 #define c 1013904223
 #define n0 12345
-#define N 10000//10000000
+#define N 10//10000000
 #define sidelen 65536
 
 typedef unsigned long ULONG;
@@ -136,6 +136,7 @@ int main(int argc,char* argv[])
             // Scale current random integer to value from 0−1
             double x = rescale( ix, -1, 1);
             double y = rescale( iy, -1, 1);
+            fprintf(stdout,"x y = %f , %f \n", x,y); 
             if ( is_in_circle ( x, y) ) 
                 number_in_circle0++;
 
