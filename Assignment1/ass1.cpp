@@ -109,7 +109,7 @@ int main(int argc,char* argv[])
 
     } 
 
-    else if (myid == 1) {
+    else {
         //std::vector<ULONG> vbuffer;
         fprintf(stdout,"slave check pt 1 \n");
         T1 = MPI_Wtime();
