@@ -52,6 +52,49 @@ int main(int argc,char* argv[])
 
     ULONG number_of_random_numbers = N/numproc;
     fprintf(stdout, "number_of_random_numbers = %d\n", number_of_random_numbers);  
+
+    ULONG JUMPCONST[40][2] = {
+        {1664525,1013904223},
+        { 389569705 ,    1196435762},
+        {2940799637 ,    3519870697},
+        {158984081  ,   2868466484},
+        {2862450781 ,    1649599747},
+       {3211393721  ,   2670642822},
+       {1851289957  ,   1476291629},
+       {3934847009  ,   2748932008},
+       {2184914861  ,   2180890343}, 
+       {246739401   ,  2498801434}, 
+      {1948736821   ,  3421909937}, 
+      {2941245873   ,  3167820124}, 
+      {4195587069   ,  2636375307}, 
+      {4088025561   ,  3801544430}, 
+       {980655621   ,    28987765},  
+      {2001863745   ,  2210837584},
+       {657792333   ,  3039689583},
+        {65284841   ,  1338634754},
+      {1282409429   ,  1649346937},
+      {3808694225   ,  2768872580},
+      {2968195997   ,  2254235155},
+      {2417331449   ,  2326606934},
+      {2878627493   ,  1719328701},
+       {307989601   ,  1061592568},
+       {504219373   ,    53332215},
+      {1897564169   ,  1140036074},
+      {2574089845   ,  4224358465},
+      {3294562801   ,  2629538988},
+      {3478292285   ,  1946028059},
+      {2651335705   ,   573775550},
+      {2523738949   ,  1473591045},
+       {666245249   ,    95141024},
+      {4137395341   ,  1592739711},
+      {2604435753   ,  1618554578},
+      {1706708245   ,  4257218569},
+      {3963176977   ,  2685635028},
+      {3678957277   ,  2617994019},
+      {3530469177   ,   740185638},
+      {3858799589   ,  4194465613},
+       {629287073   ,  2426187848}
+    };
     /*
     int k = numproc;
     ULONG A = compute_A (k);
@@ -63,6 +106,9 @@ int main(int argc,char* argv[])
 
     ULONG C = (c * temp) % m ;
     */
+    ULONG A = JUMPCONST[numproc][0];
+    ULONG C = JUMPCONST[numproc][1];
+
     if (myid == 0) {
         n_prev = n0;
         number_in_circle0 = 0;
@@ -82,7 +128,7 @@ int main(int argc,char* argv[])
         n_prev = n0;
         for(int i = 0 ; i < number_of_random_numbers; i++){
             //fprintf(stdout, "master i = %d\n", i); 
-            n_next = (a * n_prev + c) % m;
+            n_next = (A * n_prev + C) % m;
             n_prev = n_next;
             // Scale the random number to a random 2−d position
             ix = n_next % sidelen;
@@ -120,7 +166,7 @@ int main(int argc,char* argv[])
         fprintf(stdout,"slave check pt 2 \n");
         for(int i = 0 ; i < number_of_random_numbers; i++){
             //fprintf(stdout, "slave i = %d\n", i); 
-            n_next = (a * n_prev + c) % m;
+            n_next = (A * n_prev + C) % m;
             n_prev = n_next;
             // Scale the random number to a random 2−d position
             ix = n_next % sidelen;
