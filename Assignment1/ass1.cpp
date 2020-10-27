@@ -25,14 +25,6 @@ bool is_in_circle (double x,double y) {
 
 }
 
-ULONG compute_A (int k) {
-    ULONG A = 1;
-    for(int i = 0; i < k; i++){
-        A = (A * a) % m ;
-    }
-    return A;
-}
-
 //always use argc and argv, as mpirun will pass the appropriate parms.
 int main(int argc,char* argv[])
 {
@@ -121,6 +113,7 @@ int main(int argc,char* argv[])
         }
 
         T0 = MPI_Wtime();
+        
         n_prev = n0;
         for(int i = 0 ; i < number_of_random_numbers; i++){
             //fprintf(stdout, "master i = %d\n", i); 
@@ -140,6 +133,7 @@ int main(int argc,char* argv[])
 
         T0 = MPI_Wtime() - T0 ;
         fprintf(stdout,"Master %d total time:  %f s\n",myid, T0);
+        
         for (int i=1;i<numproc;i++) {//receive from all nodes
             MPI_Recv(&number_in_circle1, 1, MPI_UNSIGNED_LONG, i,0, MPI_COMM_WORLD, &Stat);   
             fprintf(stdout,"number_in_circle1 = %d \n", number_in_circle1);
