@@ -7,7 +7,7 @@
 #define m 4294967296
 #define c 1013904223
 #define n0 12345
-#define N 100000000
+#define N 1000000000
 #define sidelen 65536
 
 typedef unsigned long ULONG;
@@ -133,7 +133,7 @@ int main(int argc,char* argv[])
 
         T0 = MPI_Wtime() - T0 ;
         fprintf(stdout,"Master %d total time:  %f s\n",myid, T0);
-        
+
         for (int i=1;i<numproc;i++) {//receive from all nodes
             MPI_Recv(&number_in_circle1, 1, MPI_UNSIGNED_LONG, i,0, MPI_COMM_WORLD, &Stat);   
             fprintf(stdout,"number_in_circle1 = %d \n", number_in_circle1);
@@ -141,7 +141,10 @@ int main(int argc,char* argv[])
         }
         fprintf(stdout,"Total points in points = %d \n", number_in_circle0); 
         fprintf(stdout,"The final result for PI is %f \n", (4.0 * number_in_circle0) / N );
-
+        
+        T_TOTAL = MPI_Wtime() - T_TOTAL;
+    
+        fprintf(stdout,"Programme total time:  %f s\n", T_TOTAL);
     } 
 
     else {
@@ -173,9 +176,7 @@ int main(int argc,char* argv[])
         MPI_Send(&number_in_circle1, 1, MPI_UNSIGNED_LONG, 0, 0, MPI_COMM_WORLD);
     }
 
-    T_TOTAL = MPI_Wtime() - T_TOTAL;
     
-    fprintf(stdout,"Programme total time:  %f s\n", T_TOTAL);
 
     MPI::Finalize();
 }
