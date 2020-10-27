@@ -102,7 +102,6 @@ int main(int argc,char* argv[])
         n_prev = n0;
         number_in_circle0 = 0;
 
-        
         for(int i = 1; i < numproc; i++){
 
             n_next = (a * n_prev + c) % m;
@@ -116,7 +115,6 @@ int main(int argc,char* argv[])
         
         n_prev = n0;
         for(int i = 0 ; i < number_of_random_numbers; i++){
-            //fprintf(stdout, "master i = %d\n", i); 
             n_next = (A * n_prev + C) % m;
             n_prev = n_next;
             // Scale the random number to a random 2−d position
@@ -128,7 +126,6 @@ int main(int argc,char* argv[])
             //fprintf(stdout,"x y = %f , %f \n", x,y); 
             if ( is_in_circle ( x, y) ) 
                 number_in_circle0++;
-
         }
 
         T0 = MPI_Wtime() - T0 ;
@@ -136,7 +133,7 @@ int main(int argc,char* argv[])
 
         for (int i=1;i<numproc;i++) {//receive from all nodes
             MPI_Recv(&number_in_circle1, 1, MPI_UNSIGNED_LONG, i,0, MPI_COMM_WORLD, &Stat);   
-            fprintf(stdout,"number_in_circle1 = %d \n", number_in_circle1);
+            fprintf(stdout,"number_in_circle1 = %d from Slave %d\n", number_in_circle1, i);
             number_in_circle0 += number_in_circle1;
         }
         fprintf(stdout,"Total points in points = %d \n", number_in_circle0); 
