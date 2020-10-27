@@ -38,8 +38,13 @@ int main(int argc,char* argv[])
 {
     int numproc, myid, namelen;
     char processor_name[MPI_MAX_PROCESSOR_NAME];
+
     ULONG n_next,n_prev,number_in_circle0,number_in_circle1,ix,iy;
-    double T0,T1;
+    double T0,T1,T_TOTAL;
+
+
+    T_TOTAL = MPI_Wtime();
+
     MPI_Status Stat;//status variable, so operations can be checked
 
     MPI_Init(&argc,&argv);//INITIALIZE
@@ -53,6 +58,7 @@ int main(int argc,char* argv[])
     ULONG number_of_random_numbers = N/numproc;
     fprintf(stdout, "number_of_random_numbers = %d\n", number_of_random_numbers);  
 
+    //Jump constant table for look up
     ULONG JUMPCONST[40][2] = {
         {1664525,1013904223},
         { 389569705 ,    1196435762},
@@ -95,35 +101,26 @@ int main(int argc,char* argv[])
       {3858799589   ,  4194465613},
        {629287073   ,  2426187848}
     };
-    /*
-    int k = numproc;
-    ULONG A = compute_A (k);
-    ULONG temp = 0 ;
-    
-    for (int i = k - 1  ; i > 0 ; i--){
-        temp = temp + compute_A (i);
-    }
 
-    ULONG C = (c * temp) % m ;
-    */
     ULONG A = JUMPCONST[numproc-1][0];
     ULONG C = JUMPCONST[numproc-1][1];
 
     if (myid == 0) {
+
         n_prev = n0;
         number_in_circle0 = 0;
-        //fprintf(stdout,"check pt 1 \n");
-        T0 = MPI_Wtime();
+
+        
         for(int i = 1; i < numproc; i++){
-            //std::vector<ULONG> vbuffer;
+
             n_next = (a * n_prev + c) % m;
             n_prev = n_next;
-            //vbuffer.push_back(n_next);
-            //vbuffer.push_back(i);
+
             fprintf(stdout, "send %ld to slave %d\n",n_next,i);
             MPI_Send(&n_next, 1, MPI_UNSIGNED_LONG, i,0, MPI_COMM_WORLD);
         }
-        //fprintf(stdout,"check pt 2 \n");
+
+        T0 = MPI_Wtime();
         n_prev = n0;
         for(int i = 0 ; i < number_of_random_numbers; i++){
             //fprintf(stdout, "master i = %d\n", i); 
@@ -140,8 +137,7 @@ int main(int argc,char* argv[])
                 number_in_circle0++;
 
         }
-        //fprintf(stdout,"number_in_circle0 = %d \n", number_in_circle0);
-        //fprintf(stdout,"check pt 3 \n");
+
         T0 = MPI_Wtime() - T0 ;
         fprintf(stdout,"Master %d total time:  %f s\n",myid, T0);
         for (int i=1;i<numproc;i++) {//receive from all nodes
@@ -155,8 +151,7 @@ int main(int argc,char* argv[])
     } 
 
     else {
-        //std::vector<ULONG> vbuffer;
-        //fprintf(stdout,"slave check pt 1 \n");
+
         T1 = MPI_Wtime();
         MPI_Recv(&n_next, 1, MPI_UNSIGNED_LONG, 0, 0, MPI_COMM_WORLD, &Stat);
         fprintf(stdout,"n_next = %ld \n", n_next);
@@ -178,11 +173,15 @@ int main(int argc,char* argv[])
 
         }
         T1 = MPI_Wtime() - T1 ;
-        //fprintf(stdout,"slave check pt 3 \n");
+
         fprintf(stdout,"Slave %d total time:  %f s\n",myid, T1);
-        //fprintf(stdout,"number_in_circle1 = %d \n", number_in_circle1);
 
         MPI_Send(&number_in_circle1, 1, MPI_UNSIGNED_LONG, 0, 0, MPI_COMM_WORLD);
     }
+
+    T_TOTAL = MPI_Wtime() - T_TOTAL;
+    
+    fprintf(stdout,"Programme total time:  %f s\n", T_TOTAL);
+
     MPI::Finalize();
 }
