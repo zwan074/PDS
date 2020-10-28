@@ -49,8 +49,7 @@ int main(int argc, char *argv[])
         for (int i = 0; i < ndata * numproc; ++i) {
             sendbuf_rand_nums[i] = drand48()*(xmax-xmin-1)+xmin;
         }   
-        T0 = MPI_Wtime() - T0;
-        cout << "Processor " << myid << " generating random number Time: " << T0 << endl;
+        cout << "Processor " << myid << " generating random number Time: " << MPI_Wtime() - T0 << endl;
     }
     
     //divide them equally on slaves and master procs.
@@ -116,6 +115,9 @@ int main(int argc, char *argv[])
     
     //quick sort numbers in each big bucket
     qsort (&big_bucket[0], big_bucket.size(), sizeof(float), compare);
+    
+    T1 = MPI_Wtime() - T1;
+    cout << "Processor " << myid << " : " << T1 << endl;
 
     MPI_Barrier(MPI_COMM_WORLD);
 
@@ -136,15 +138,14 @@ int main(int argc, char *argv[])
     MPI::COMM_WORLD.Gatherv( &big_bucket[0], big_bucket.size(), MPI_FLOAT, 
                             &final_sorted_vector[0], &recvcnt_final[0], &recvcnt_final_off[0] , MPI_FLOAT, 0);
 
-    T1 = MPI_Wtime() - T1;
-    cout << "Processor " << myid << " : " << T1 << endl;
+    
 
     //lastly compute results and check if numbers have been sorted.
     if (myid == root) {
         cout << "final vector size: " << final_sorted_vector.size() << endl;
         check(final_sorted_vector,final_sorted_vector.size() ) ;
-        T0 = MPI_Wtime() - T0;
-        cout << "Processor " << myid << " Total Time : " << T0 << endl;
+
+        cout << "Processor " << myid << " Total Time : " <<  MPI_Wtime() - T0 << endl;
         //for (int i = 0; i < final_sorted_vector.size() ; i++) {
             //cout << final_sorted_vector[i] << "," ;
         //}
