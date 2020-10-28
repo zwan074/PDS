@@ -49,6 +49,8 @@ int main(int argc, char *argv[])
         for (int i = 0; i < ndata * numproc; ++i) {
             sendbuf_rand_nums[i] = drand48()*(xmax-xmin-1)+xmin;
         }   
+        T0 = MPI_Wtime() - T0;
+        cout << "Processor " << myid << " generating random number Time: " << T0 << endl;
     }
     
     //divide them equally on slaves and master procs.
