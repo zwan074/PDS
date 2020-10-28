@@ -12,7 +12,7 @@ int compare (const void * a, const void * b)
   return ( *(int*)a - *(int*)b );
 }
 
-int check(float *data,int nitems) {
+int check(vecotr<float> data,int nitems) {
   double sum=0;
   int sorted=1;
   int i;
@@ -21,12 +21,12 @@ int check(float *data,int nitems) {
      sum+=data[i];
      if(i && data[i]<data[i-1]) sorted=0;
   }
-  printf("sum=%f, sorted=%d\n",sum,sorted);
+  fprintf(stdout,"sum=%f, sorted=%d\n",sum,sorted);
 }
 
 int main(int argc, char *argv[])
 {
-    const int ndata = 5000;
+    const int ndata = 500000;
     const float xmin = 1.0;
     const float xmax = 100.0;
     double T0,T1,T2,T3;
@@ -78,38 +78,25 @@ int main(int argc, char *argv[])
 
     for (int i = 0; i < small_bucket_2d.size(); ++i) {
         nitems.push_back(small_bucket_2d[i].size());
-        //cout << "SMALL BUCKET RECV " << myid << " : " << " bucket No. " << i << endl;
-        //cout << "SMALL BUCKET ITEMS " << myid << " : " << nitems[i] << endl;
         for (int j = 0; j < small_bucket_2d[i].size() ; ++j){
-            //cout << small_bucket_2d[i][j] << "," ; 
             small_bucket_1d.push_back(small_bucket_2d[i][j]);
         }
-        //cout << endl;
     }
-    //cout << "SMALL BUCKET 1D " << myid << " : " << endl;
-    //for (int i = 0; i < small_bucket_1d.size() ; ++i){
-        //cout << small_bucket_1d[i] << "," ; 
-    //}
-    //cout << endl;
-    //T1 = MPI_Wtime() - T1;
-    //cout << "SMALL BUCKET 1D T1 " << myid << " : " << T1 << endl;
 
 
     MPI_Barrier(MPI_COMM_WORLD);
     
     //put numbers into the big buckets
 
-    //T2 = MPI_Wtime();
+
     vector<int> recvcnt(numproc);
     MPI::COMM_WORLD.Alltoall(&nitems[0], 1, MPI_INT, &recvcnt[0], 1, MPI_INT);
     vector<int> recvoff(numproc);
     recvoff[0] = 0;
-    //cout << "BIG BUCKET OFFSETS " << myid << endl;
+
     for (int n = 1; n < numproc; ++n) {
         recvoff[n] = recvoff[n-1] + recvcnt[n-1];
-        //cout << "BIG BUCKET OFFSETS " << recvoff[n] << ",";
     }
-    //cout << endl;
 
     int big_bucket_size = 0 ;
     for (int i = 0; i < recvcnt.size() ; i++) {
@@ -119,14 +106,10 @@ int main(int argc, char *argv[])
     vector<float> big_bucket( big_bucket_size );
     vector<int> sendoff(numproc);
     sendoff[0] = 0;
-    //cout << "SMALL BUCKET OFFSETS " << myid << endl;
+
     for (int n = 1; n < numproc; ++n) {
         sendoff[n] = sendoff[n-1] + nitems[n-1];
-        //cout << "SMALL BUCKET OFFSETS " << sendoff[n] << ",";
     }
-    //cout << endl;
-    //T2 = MPI_Wtime() - T2;
-    //cout << "SMALL BUCKET OFFSETS T2 " << myid << " : "  << T2 << endl;
 
     MPI_Barrier(MPI_COMM_WORLD);
 
@@ -136,13 +119,6 @@ int main(int argc, char *argv[])
     
     //quick sort numbers in each big bucket
     qsort (&big_bucket[0], big_bucket.size(), sizeof(float), compare);
-
-    //cout << "BIG BUCKET No. " << myid << endl;
-    
-    //for (int i = 0; i < big_bucket.size() ; i++) {
-        //cout << big_bucket[i] << "," ;
-    //}
-    //cout << endl;
 
     MPI_Barrier(MPI_COMM_WORLD);
 
@@ -169,7 +145,7 @@ int main(int argc, char *argv[])
     //lastly compute results and check if numbers have been sorted.
     if (myid == root) {
         cout << " final vector : " << final_sorted_vector.size() << endl;
-        check(&final_sorted_vector,final_sorted_vector.size() ) 
+        check(final_sorted_vector,final_sorted_vector.size() ) ;
         //for (int i = 0; i < final_sorted_vector.size() ; i++) {
             //cout << final_sorted_vector[i] << "," ;
         //}
